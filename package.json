@@ -1,0 +1,26 @@
+{
+  "name": "express",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "chat": "nodemon chat.js"
+  },
+  "author": "lalit",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "express": "^4.18.1",
+    "nodemon": "^2.0.19"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lalit92rjk/express.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lalit92rjk/express/issues"
+  },
+  "homepage": "https://github.com/Lalit92rjk/express#readme",
+  "description": ""
+}
