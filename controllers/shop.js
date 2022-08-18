@@ -77,7 +77,7 @@ exports.getIndex = (req, res, next) => {
   });
 };
 
-exports.getCart = (req, res, next) => {
+/*exports.getCart = (req, res, next) => {
   req.user
     .getCart()
     .then(cart => {
@@ -97,6 +97,61 @@ exports.getCart = (req, res, next) => {
         .catch(err => { res.status(500).json({ success: false, message: err }) });
     })
     .catch(err => res.status(500).json({ success: false, message: err }));
+};*/
+
+exports.getCart = (req, res, next) => {
+  // req.user.getCart()
+  // .then((cart)=>{
+  //   return cart.getProducts();
+  // })
+  // .then((products)=>{
+  //     res.render('shop/cart', {
+  //     path: '/cart',
+  //     pageTitle: 'Your Cart',
+  //     products:products
+
+  //   });
+  // })
+  // .catch(err=>{
+  //   console.log(err)
+  // })
+  const items_per_page=2
+  let total_items;
+  let fetchedCart;
+  let all_products;
+  let page= +req.query.page || 1;
+  req.user.getCart()
+  .then((cart)=>{
+      fetchedCart=cart
+      return cart.countProducts()
+  })
+  .then((count)=>{
+    total_items=count;
+    return fetchedCart.getProducts();
+  })
+  .then((allProducts)=>{
+    all_products=allProducts;
+    return fetchedCart.getProducts({offset:(page-1)*items_per_page, limit:items_per_page})
+  })
+  .then(products=>{
+    res.status(200).json({
+      totalItems:total_items,
+      
+      allProducts:all_products,
+      products:products,
+      hasNextPage: (page*items_per_page<total_items),
+      hasPreviousPage: page>1,
+      currentPage:page,
+      nextPage:page+1,
+      previousPage:page-1,
+      lastPage:(Math.ceil(total_items/items_per_page))
+
+    })
+  })
+  .catch(()=>{
+    res.status(500).json({success:false,message:'can not extract from cart'})
+  })
+
 };
 
 exports.postCart = (req, res, next) => {
@@ -155,6 +210,26 @@ exports.postCart = (req, res, next) => {
     .catch(err => console.log(err));
 };*/
 
+exports.postDelete=(req,res,next)=>{
+  if(!req.body.productId)
+  return res.status(400).json({success:false,message:'Product Id missing'})
+  const prodId=req.body.productId;
+  req.user.getCart()
+  .then((cart)=>{
+    return cart.getProducts({where:{id:prodId}})
+  })
+  .then((products)=>{
+    const product=products[0];
+    product.cartItem.destroy();
+    res.status(200).json({success:true, message: 'Successfully Deleted'})
+    //res.redirect('/cart')
+  })
+  .catch(err=>{
+    res.status(500).json({success:false,message:'error occured while deleting'})
+  })
+}
+
+
 /*exports.postOrder = (req, res, next) => {
   let fetchedCart;
   req.user
@@ -185,27 +260,6 @@ exports.postCart = (req, res, next) => {
     .catch(err => console.log(err));
 }
 */
-/*exports.getOrders = (req, res, next) => {
-  req.user
-    .getOrders({include: ['products']})
-    .then(orders => {
-      res.render('shop/orders', {
-        path: '/orders',
-        pageTitle: 'Your Orders',
-        orders: orders
-      });
-    })
-    .catch(err => console.log(err));
-};*/
-
-
-exports.getCheckout = (req, res, next) => {
-  res.render('shop/checkout', {
-    path: '/checkout',
-    pageTitle: 'Checkout'
-  });
-};
-
 exports.postOrder=(req, res, next) =>{
   let total_amount=0;
   let orderId;
@@ -238,25 +292,18 @@ exports.postOrder=(req, res, next) =>{
 }
 
 
-exports.postDelete=(req,res,next)=>{
-  if(!req.body.productId)
-  return res.status(400).json({success:false,message:'Product Id missing'})
-  const prodId=req.body.productId;
-  req.user.getCart()
-  .then((cart)=>{
-    return cart.getProducts({where:{id:prodId}})
-  })
-  .then((products)=>{
-    const product=products[0];
-    product.cartItem.destroy();
-    res.status(200).json({success:true, message: 'Successfully Deleted'})
-    //res.redirect('/cart')
-  })
-  .catch(err=>{
-    res.status(500).json({success:false,message:'error occured while deleting'})
-  })
-}
-
+/*exports.getOrders = (req, res, next) => {
+  req.user
+    .getOrders({include: ['products']})
+    .then(orders => {
+      res.render('shop/orders', {
+        path: '/orders',
+        pageTitle: 'Your Orders',
+        orders: orders
+      });
+    })
+    .catch(err => console.log(err));
+};*/
 
 exports.getOrders = (req, res, next) => {
   req.user.getOrders({include:[`products`]})
@@ -272,3 +319,16 @@ exports.getOrders = (req, res, next) => {
     console.log(err)
   })
 };
+
+
+exports.getCheckout = (req, res, next) => {
+  res.render('shop/checkout', {
+    path: '/checkout',
+    pageTitle: 'Checkout'
+  });
+};
+
+
+
+
+
