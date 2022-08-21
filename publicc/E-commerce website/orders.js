@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded',renderOrderPage)
 function renderOrderPage(){
     const orderDiv=document.getElementById('orderDiv')
     orderDiv.innerHTML=''
-    axios.get('http://localhost:3000/orders')
+    axios.get('http://43.205.207.200:3000/orders')
     .then(response=>{
         response.data.orders.reverse().forEach(order => {
             const orderBox=document.createElement('div')

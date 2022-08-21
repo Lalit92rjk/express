@@ -4,7 +4,7 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log('data');
     displayProducts();
 
-    axios.get('http://localhost:3000/products').then((data) => {
+    axios.get('http://43.205.207.200:3000/products').then((data) => {
         console.log(data);
         if(data.request.status === 200) {
             const products = data.data.products;
@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 function addToCart(productId) {
-    axios.post('http://localhost:3000/cart', {productId: productId})
+    axios.post('http://43.205.207.200:3000/cart', {productId: productId})
         .then(response =>{
             if(response.status === 200) {
                 notifyUsers(response.data.message);
@@ -46,7 +46,7 @@ function addToCart(productId) {
 }
 
 function getCartDetails() {
-    axios.get('http://localhost:3000/cart')
+    axios.get('http://43.205.207.200:3000/cart')
         .then(response => {
             if(response.status === 200) {
                 response.data.products.forEach(product => {
@@ -93,7 +93,7 @@ document.addEventListener('click',(e)=>{
 
 
     if (e.target.innerText=='REMOVE'){
-        axios.post('http://localhost:3000/cart-delete-item',{'productId':e.target.parentNode.parentNode.id.substring(8)})
+        axios.post('http://43.205.207.200:3000/cart-delete-item',{'productId':e.target.parentNode.parentNode.id.substring(8)})
         .then(response=>{
         removeFromFrontendCart(e)
         notifyUsers(response.data.message);  
@@ -110,7 +110,7 @@ document.addEventListener('click',(e)=>{
             alert('You have Nothing in Cart , Add some products to purchase !');
         }
         else{
-            axios.post('http://localhost:3000/order-place')
+            axios.post('http://43.205.207.200:3000/order-place')
             .then((response)=>{
                 notifyUsers(response.data.message);
                 const cart_items = document.querySelector('#cart .cart-items');
@@ -140,7 +140,7 @@ function removeFromFrontendCart(event){
   
 //displaying products
 function displayProducts(queryParams=''){
-    axios.get(`http://localhost:3000/products/${queryParams}`)
+    axios.get(`http://43.205.207.200:3000/products/${queryParams}`)
     .then(result=>{
         const productsDisplayContainerDiv=document.getElementById('Products')
         productsDisplayContainerDiv.innerHTML='';
@@ -203,7 +203,7 @@ function pagination(response,container,place){
 }
 //display in cart
 function displayInCart(queryParams=''){
-    axios.get(`http://localhost:3000/cart/${queryParams}`)
+    axios.get(`http://43.205.207.200:3000/cart/${queryParams}`)
     .then(response=>{
         const cart_items = document.querySelector('#cart .cart-items');
         cart_items.innerHTML='';
